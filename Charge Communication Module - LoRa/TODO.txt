@@ -1,0 +1,55 @@
+ #TODO 1: if time? Add switch for power saving between voltage divider on board
+ Add switch (relay?) between battery on both arduino and being measured(maybe???) to reduce current consumption
+
+                         +---------+
+  BAT+ ---+--------- VIN |         |
+          |              |         |
+         SW--------- ACT |         |
+          |              |         |
+         R1              |         |
+          |              | Arduino |
+          +------- SENSE |         |
+          |              |         |
+         R2              |         |
+          |              |         |
+  BAT- ------------- GND |         |
+                         +---------+
+
+In the above schematics, SW is a circuit that can connect or disconnect the sensing circuit 
+depending on the voltage on ACT
+
+the most common and cheap circuit is made of 
+- NPN transistor Q1
+- p-channel MOSFET Q2
+- 1k-4.7k Ohm resistor R3
+- 5k-20k Ohm resistor R4
+                       BAT+
+                        |
+                  +-----+
+                  |     |
+                  R4    |
+                  |\    |
+   ACT --- R3 ---Q1 \-- Q2
+                  |     |
+                  |     |
+                 GND   VDIV
+                       to R1/R2/SENSE
+
+
+#TODO 2: Add battery percentage estimator to sensor.cpp and sensor.h
+      - based on power.cpp, power.h battery functions
+
+#TODO 3: Classify possible sensors by very high, high and medium relevant
+      - identify what characteristics need to be known
+      - identify how these sensors inform us of this
+      - identify the most efficient way to gain this need to know information
+
+      RELEVANCE VS PRACTICALITY
+      For each identified Parameter/Phenomenon, and their Relevance to Bees (etc)
+      - cost effective
+      - accurate
+      - energy efficient
+      - computationally simple
+      - deployable
+      - non-invasive
+      - overall usability
