@@ -51,7 +51,7 @@ Reset -> reset device
 // enable only if device has these sensors, otherwise comment these lines
 // BME280 sensor on I2C bus
 #define HAS_BME 1 // Enable BME sensors in general
-#define HAS_BME280 GPIO_NUM_32, GPIO_NUM_33  // SDA, SCL
+#define HAS_BME280 GPIO_NUM_21, GPIO_NUM_22  // SDA, SCL
 #define BME280_ADDR 0x76 // change to 0x77 depending on your wiring
 
 //#define DISABLE_BROWNOUT 1 // comment out if you want to keep brownout feature
