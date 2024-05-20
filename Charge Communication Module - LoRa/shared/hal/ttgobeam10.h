@@ -54,6 +54,11 @@ Reset -> reset device
 #define HAS_BME280 GPIO_NUM_21, GPIO_NUM_22  // SDA, SCL
 #define BME280_ADDR 0x76 // change to 0x77 depending on your wiring
 
+// up to three user defined sensors (if connected)
+#define HAS_SENSOR_1 1 // comment out if device has user defined sensor #1
+//#define HAS_SENSOR_2 1 // comment out if device has user defined sensor #2
+//#define HAS_SENSOR_3 1 // comment out if device has user defined sensor #3
+
 //#define DISABLE_BROWNOUT 1 // comment out if you want to keep brownout feature
 
 #endif
