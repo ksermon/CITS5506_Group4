@@ -11,6 +11,38 @@ A device compatible with almost any LiPo battery under 48V, used to monitor and 
 
 This will be instructions on how to register the device to the users own TTN
 
+The Things Network Configuration
+
+- Create an account
+  - To begin, you need to create an accoung on [The Things Network(TTN)](https://www.thethingsnetwork.org/)
+- Create an Application via TTN
+  - Log in to the TTN Console and select your region for the cluster
+  - Navigate to the Application tab and click on "Create application"
+  - Fill in the Application ID, Application name and Description fields
+
+- Register your device
+  - Click the the "Register end device" button
+  - Select the appropriate Frequency plan, LoRaWAN version, and Regional Parameter version
+- Configure advanced settings
+  - Set the Activation mode, Additional LoRaWAN class capabilities, Network defaults, Custer settings in the advanced setting section
+- Generate DevEUI, Device Address, AppSKey, NwkSKey by clicking "Generate" button
+
+Node-RED settings for TTN connection
+
+- TTN Applications
+
+  - Navigate MQTT tab under the Integration menu
+  - Generate the Password in the Connection credential section
+
+- Node-RED
+
+  - Use the "mqtt in" node to receive data from the TTN server
+  - Configure the server in the Porperties tab
+    - Fill in the Server section in the Connection tab with the same public address from the TTN application 
+    - Fill in the Username and Password in the Security tab with the same Connection credentials from the TTN application
+
+  - Specify the Topic to subscribe to the desired massege topic from TTN server. Use "#" to receive messages from any topic
+
 Integration into "The Things Stack Community Edition" aka "The Things Stack V3"
 To use the ESP32-Paxcounter in The Things Stack Community Edition you need an account to reach the console. Go to:
 
