@@ -11,6 +11,18 @@ A device compatible with almost any LiPo battery under 48V, used to monitor and 
 
 This will be instructions on how to register the device to the users own TTN
 
+Integration into "The Things Stack Community Edition" aka "The Things Stack V3"
+To use the ESP32-Paxcounter in The Things Stack Community Edition you need an account to reach the console. Go to:
+
+- The Things Stack Community Edition Console
+- choose your region and go to applications
+- create an application by clicking "+ Add application" and give it a id, name, etc.
+- create a device by clicking "+ Add end device"
+- Select the end device: choose the Brand "Open Source Community Projects" and the Model "ESP32-Paxcounter", leave Hardware Version to "Unknown" and select your Firmware Version and Profile (Region)
+-Enter registration data: choose the frequency plan (for EU choose the recommended), set the AppEUI (Fill with zeros), set the DeviceEUI (generate), set the AppKey (generate), choose a device ID and hit "Register end device"
+- go to Applications -> "your App ID" -> Payload formatters -> Uplink, choose "Repository" and hit "Save changes"
+The "Repository" payload decoder uses the packed format, explained below. If you want to use MyDevices from Cayenne you should use the Cayenne payload decoder instead.
+
 ## Software Installation
 
 This project file is built using [PlatformIO IDE for embedded development](https://platformio.org/) and integrates into your chosen IDE, like VSCode or Atom.
@@ -27,35 +39,17 @@ The file 'shared/loraconf.h' can be used to change the connection configuration.
 To configure OTAA, leave `#define LORA_ABP` deactivated (commented). To use ABP, activate (uncomment) `#define LORA_ABP` in the file `shared/loraconf.h`.
 The file `shared/loraconf_sample.h` contains more information about the values to provide.
 
-=== "Activate OTAA (Default), Deactivate ABP"
-    ``` c linenums="18" title="shared/loraconf.h"
-    --8<-- "shared/loraconf_sample.h:18:18"
-    ```
-=== "Deactivate OTAA, Activate ABP"
-    ``` c linenums="18" title="shared/loraconf.h"
-    #define LORA_ABP
-
 *This is currently configured to use ABP, however you will need to update the appropriate TTN values from your setup above.
 
 If using the OTAA option, you should also configure the 'shared/ota.conf' file.
 By copying the template 'shared/ota_sample.conf' and inputting your WIFI netowork and key, you can use a local web browser to upload updates to the device wirelessly.
 If you don't need wireless firmware updating capabilities simply rename 'ota_sample.conf' to 'ota.conf'
 
-=== "Copy"
-    ``` bash
-    cp shared/ota_sample.conf shared/ota.conf
-    ```
-=== "Rename"
-    ``` bash
-    mv shared/ota_sample.conf shared/ota.conf
-    ```
-
 ### Uploading
 
 *These instructions taken directly from ESP32-Paxcounter Docs*
 
-!!! warning
-
+    !!! warning
      1. After editing `paxcounter.conf`, use "clean" button before "build" in PlatformIO!
      2. Clear NVRAM of the board to delete previous stored runtime settings (`pio run -t erase`)
 
@@ -74,6 +68,12 @@ After the ESP32 board is initially flashed and has joined a LoRaWAN network, the
 
 If option *BOOTMENU* is defined in `paxcounter.conf`, the ESP32 board will try to connect to a known WiFi access point each time cold starting (after a power cycle or a reset), using the WiFi credentials given in `ota.conf`. Once connected to the WiFi it will fire up a simple webserver, providing a bootstrap menu waiting for a user interaction (pressing "START" button in menu). This process will time out after *BOOTDELAY* seconds, ensuring booting the device to runmode. Once a user interaction in bootstrap menu was detected, the timeout will be extended to *BOOTTIMEOUT* seconds. During this time a firmware upload can be performed manually by user, e.g. using a smartphone in tethering mode providing the firmware upload file.
 
+### Payload Configuration
+This will contain instructions on how to add the payload masks to TTN
+
+### Node-Red Configuration
+This will contain instructions on how a user can add a device to the Node-Red platform
+
 ## CCM Uses
 
 
@@ -81,63 +81,60 @@ If option *BOOTMENU* is defined in `paxcounter.conf`, the ESP32 board will try t
 
 This lists the name and location of files that were modified for the purposes of this project, including comments on how they were adapted.
 
-## platform.ini
+## Configuration & Connection
+
+### platform.ini
 
 This file was copied from 'platformio_orig.ini' as per the installation instructions for ESP32 CPU based boards.
-```ini linenums="6" title="Uncomment your board"
---8<-- "platformio_orig.ini:6:36"
-```
 
-=== "Copy"
-    ``` bash
-    cp platformio_orig.ini platformio.ini
-    ```
-=== "Rename"
-    ``` bash
-    mv platformio_orig.ini platformio.ini
-    ```
-
-## paxcounter.conf
+### paxcounter.conf
 
 This file was edited from `shared/paxcounter_orig.conf` and settings modified in this file according to your needs and use case. Please take care of the duty cycle regulations of the LoRaWAN network you're going to use. Copy or rename to `shared/paxcounter.conf`.
 
-=== "Copy"
-    ``` bash
-    cp shared/paxcounter_orig.conf shared/paxcounter.conf
-    ```
-=== "Rename"
-    ``` bash
-    mv shared/paxcounter_orig.conf shared/paxcounter.conf
-    ```
-
 These settings were adjusted and tested to determine the most effective messaging frequency and contents.
 
-```c linenums="135" title="national regulations in shared/lmic_config.h "
---8<-- "shared\paxcounter.conf:1:135"
-```
-
-## shared/lmic.config.h
+### shared/lmic.config.h
 
 This file is adapted to match user country and device hardware.
 
-```c linenums="9" title="national regulations in shared/lmic_config.h "
---8<-- "shared/lmic_config.h:9:18"
-```
-
-## shared/loraconf.h
+### shared/loraconf.h
 
 Created from the template file in 'shared/loraconf_sample.h'
 
-=== "Copy"
-    ``` bash
-    cp shared/loraconf_sample.h shared/loraconf.h
-    ```
-=== "Rename"
-    ``` bash
-    mv shared/loraconf_sample.h shared/loraconf.h
-    ```
-
 The configuration options for either the OTAA or ABP join method are detailed in the user instructions above.
+
+## Sensor Configuration
+
+The ESP32-Paxcounter framework supports up to 3 sensors, and has configurations already included for manufacturer reccomended options - including the BME280 Atmospheric Sensor we are using for temperature.
+Additionally, it allows the configuration of custom sensors, which is what was used to create the voltage sensor and its interface with the relay.
+
+To configure a custom sensor:
+1. Necessary variables or libraries should be added
+2. Sensor specific code should be added to the 'sensor_init' function in 'sensor.cpp'
+3. Sensor specific code should be added to the 'sensor_read' function in 'sensor.cpp'
+4. Optionally, payload functions should be included in 'payload.h' and 'payload.cpp'
+5. The payload functions are then used in 'sensor.cpp' to send the appropriate deactivated
+
+##
+
+## ttgobeam10.h
+
+Firstly, the sensor to be used must be enabled in either the 'paxcounter.conf' file, or the hal file for the board.
+In this case the HAS_SENSOR_1 was updated in the board specific file.
+
+For the BME280 Atmospheric sensor, the '#define HAS_BME 1' options and its additional variables and pins as specified in the manufacturers documentation were also defined.
+
+## sensor.cpp
+
+The sensors payload scheme was inserted into 'sensor.cpp'.
+
+## payload.h
+
+
+
+## payload.cpp 
+
+
 
 # Credits
 
