@@ -6,9 +6,11 @@
 #include "esp_log.h"
 
 #if (HAS_VOLTAGE_SENSOR)
+
 #include <driver/adc.h>
 #include <driver/gpio.h>
 double voltage;
+
 #endif // HAS_VOLTAGE_SENSOR
 
 #define SENSORBUFFER 10 // max. size of user sensor data buffer in bytes [default=20]
@@ -18,7 +20,7 @@ void sensor_init(void) {
   // put your user sensor initialization routines here
   #if (HAS_VOLTAGE_SENSOR)
   adc1_config_width(ADC_WIDTH_BIT_12);
-  adc1_config_channel_atten(ADC1_CHANNEL_4, ADC_ATTEN_DB_11); // GPIO32 -> ADC1_CHANNEL_4
+  adc1_config_channel_atten(ADC1_CHANNEL_7, ADC_ATTEN_DB_11); // GPIO32 -> ADC1_CHANNEL_4
 
   // Configure GPIO33 as an output pin for the relay signal
   gpio_pad_select_gpio(GPIO_NUM_33);
@@ -77,7 +79,7 @@ uint8_t *sensor_read(uint8_t sensor) {
     int adc_reading = adc1_get_raw(ADC1_CHANNEL_4);
     ESP_LOGI(TAG, "Raw reading: %i", adc_reading);
 
-    double V_measured = (adc_reading / 4095.0) * 3.3; // Convert ADC reading to voltage
+    double V_measured = (adc_reading / 4095.0) * 3.9; // Convert ADC reading to voltage
     double V_original = V_measured * 11; // Correct the voltage using the voltage divider ratio
 
     ESP_LOGI(TAG, "Measured Voltage: %f V", V_measured);
